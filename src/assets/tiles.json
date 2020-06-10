@@ -1,0 +1,31 @@
+{"frames": {
+
+"state_0.svg":
+{
+	"frame": {"x":0,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+},
+"state_1.svg":
+{
+	"frame": {"x":88,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+}},
+"animations": {
+	"state": ["state_0.svg","state_1.svg"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "tiles.png",
+	"format": "RGBA8888",
+	"size": {"w":176,"h":88},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:0562e21fe10187a0a65cbb1d74f417ec:1b7fb932755cc7ecfca6be88f0ffd183:accbe1e7e294ded8391337fc1c446319$"
+}
+}

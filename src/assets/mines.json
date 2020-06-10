@@ -1,0 +1,39 @@
+{"frames": {
+
+"mine_0.svg":
+{
+	"frame": {"x":0,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+},
+"mine_1.svg":
+{
+	"frame": {"x":88,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+},
+"mine_2.svg":
+{
+	"frame": {"x":176,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+}},
+"animations": {
+	"mine": ["mine_0.svg","mine_1.svg","mine_2.svg"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "mines.png",
+	"format": "RGBA8888",
+	"size": {"w":264,"h":88},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:ded3ce2189fcbcb3f1564885f1329bf0:a2c6c9f816fac0c11faf35f031117fcf:e171313b1800670b424dd10bea6a4934$"
+}
+}

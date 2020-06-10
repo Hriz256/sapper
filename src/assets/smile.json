@@ -1,0 +1,39 @@
+{"frames": {
+
+"face_0.svg":
+{
+	"frame": {"x":0,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+},
+"face_1.svg":
+{
+	"frame": {"x":88,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+},
+"face_2.svg":
+{
+	"frame": {"x":176,"y":0,"w":88,"h":88},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":88,"h":88},
+	"sourceSize": {"w":88,"h":88}
+}},
+"animations": {
+	"face": ["face_0.svg","face_1.svg","face_2.svg"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "smile.png",
+	"format": "RGBA8888",
+	"size": {"w":264,"h":88},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:cc8c129d4ac909649735cd2ef93d6725:e77363081b8ddbd9e26ce9f830356240:10bc9a925a1cdab5c90075ce2d20ab00$"
+}
+}
