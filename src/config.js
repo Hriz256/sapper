@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import {Field} from "./board";
 import {createFrame} from "./frame";
-import {createSmile, createTimer} from "./menu";
+import {createSmile, Timer} from "./menu";
 
 const config = {
     tileSize: 40,
@@ -20,21 +20,20 @@ const createObject = app => {
         mineQuantity: config.mineQuantity
     });
 
-    const fieldContainer = field.create();
+    const timer = new Timer({tileSize: config.tileSize, fieldWidth: config.fieldWidth});
+    timer.create();
+
+    const fieldContainer = field.create(timer);
     const frameContainer = createFrame(config);
     const smile = createSmile({tileSize: config.tileSize, fieldWidth: config.fieldWidth});
-    const timer = createTimer({tileSize: config.tileSize, fieldWidth: config.fieldWidth});
 
     mainContainer.addChild(frameContainer);
     mainContainer.addChild(fieldContainer);
     mainContainer.addChild(smile);
     mainContainer.addChild(timer.getContainer());
+
     app.stage.addChild(mainContainer);
-
-    app.ticker.add(() => {
-        console.log(1)
-    });
-
+    app.ticker.add(() => timer.update());
 };
 
 const createScene = async () => {

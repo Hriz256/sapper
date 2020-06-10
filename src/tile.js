@@ -1,13 +1,14 @@
 import * as PIXI from "pixi.js";
 
 class Tile {
-    constructor({tileSize, textures, x, y, openDispatchCallback}) {
+    constructor({tileSize, textures, x, y, openDispatchCallback, timer}) {
         this.tileSize = tileSize;
         this.textures = [...textures[0], ...textures[1], ...textures[2]];
         this.x = x;
         this.y = y;
         this.state = 0;
         this.openDispatchCallback = openDispatchCallback;
+        this.timer = timer;
     }
 
     create() {
@@ -25,6 +26,7 @@ class Tile {
     }
 
     buttonDown(e) {
+        !this.timer.allowUpdate && this.timer.start();
         !e.data.originalEvent.button ? this.open() : this.setFlag();
     }
 

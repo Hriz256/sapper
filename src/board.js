@@ -9,7 +9,7 @@ class Field {
         this.mineQuantity = mineQuantity;
     }
 
-    create() {
+    create(timer) {
         const field = new PIXI.Container();
 
         const numbersTextures = Array.from({length: 9}, (_, index) => {
@@ -32,7 +32,8 @@ class Field {
                     tileSize: this.tileSize,
                     x: indexX,
                     y: indexY,
-                    openDispatchCallback: this.openDispatch.bind(this)
+                    openDispatchCallback: this.openDispatch.bind(this),
+                    timer
                 });
 
                 tileInstance.create();
