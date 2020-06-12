@@ -83,10 +83,7 @@ class Field implements IField {
     setFlagsOnMines(): void {
         const mines: Array<ITile> = this.getTiles().filter(tile => tile.currentState === tile.states.notPressedMine);
 
-        Array.from(mines, mine => {
-            mine.tile.gotoAndStop(mine.states.flag);
-            mine.tile.interactive = false;
-        });
+        Array.from(mines, mine => mine.setFlag(false, true));
     }
 
     getRandomTile(): ITile {

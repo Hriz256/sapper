@@ -25,8 +25,8 @@ const createApp = (): void => {
     app.start();
 
     window.addEventListener('resize', () => {
-        app.stage.width = window.innerWidth;
-        app.stage.height = window.innerHeight;
+        app.view.width = window.innerWidth;
+        app.view.height = window.innerHeight;
     })
 };
 

@@ -55,11 +55,12 @@ class Tile implements ITile {
 
         !event.data.button ?
             this.tile.currentFrame !== this.states.flag && this.open(true, false) :
-            this.setFlag();
+            this.setFlag(true, this.tile.currentFrame !== this.states.flag);
     }
 
-    setFlag(): void {
-        this.tile.gotoAndStop(this.tile.currentFrame !== this.states.flag ? this.states.flag : this.states.default);
+    setFlag(interactive: boolean, active: boolean): void {
+        this.tile.gotoAndStop(active ? this.states.flag : this.states.default);
+        this.tile.interactive = interactive;
     }
 
     setValue(value: number): void {

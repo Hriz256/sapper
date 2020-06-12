@@ -1,11 +1,6 @@
 import {AnimatedSprite, Container} from "pixi.js";
 import {StatesType} from "./types";
 
-export interface IConfig {
-    readonly tileSize: number
-    readonly textures: object
-}
-
 export interface ITile {
     readonly tileSize: number;
     readonly textures: object;
@@ -19,7 +14,7 @@ export interface ITile {
     tile: AnimatedSprite;
     create: () => void;
     setValue: (value: number) => void;
-    setFlag: () => void;
+    setFlag: (interactive: boolean, active: boolean) => void;
     getValue: () => number;
     isOpened: () => boolean;
     resetTile: () => void;
