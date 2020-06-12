@@ -1,7 +1,7 @@
 import {AnimatedSprite} from 'pixi.js'
 import InteractionEvent = PIXI.interaction.InteractionEvent;
-import {ITile} from "../interfaces";
-import {StatesType, TileType} from "../types";
+import {ITile} from "../typing/interfaces";
+import {StatesType, TileType} from "../typing/types";
 
 class Tile implements ITile {
     readonly openDispatchCallback: (isGameOver: boolean, tile: ITile) => void;
@@ -58,12 +58,12 @@ class Tile implements ITile {
             this.setFlag();
     }
 
-    setValue(value: number): void {
-        this.currentState = value;
-    }
-
     setFlag(): void {
         this.tile.gotoAndStop(this.tile.currentFrame !== this.states.flag ? this.states.flag : this.states.default);
+    }
+
+    setValue(value: number): void {
+        this.currentState = value;
     }
 
     getValue(): number {
@@ -87,7 +87,7 @@ class Tile implements ITile {
                 this.tile.currentFrame === this.states.flag && this.setValue(this.states.flag);
 
                 this.tile.gotoAndStop(this.currentState);
-                this.openDispatchCallback(true, this);
+                !isGameOver && this.openDispatchCallback(true, this);
 
                 break;
             case this.states.init:
@@ -97,7 +97,7 @@ class Tile implements ITile {
 
                 this.tile.gotoAndStop(this.currentState);
                 this.tilesLeftCallback(isGameOver);
-                this.openDispatchCallback(isGameOver, this);
+                !isGameOver && this.openDispatchCallback(false, this);
 
                 break;
             default:

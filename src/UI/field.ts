@@ -1,7 +1,7 @@
-import {Tile} from "../tile/tile";
-import {ConfigType} from "../types";
+import {Tile} from "./tile";
+import {ConfigType} from "../typing/types";
 import {Container} from "pixi.js";
-import {IField, ITile} from "../interfaces";
+import {IField, ITile} from "../typing/interfaces";
 
 class Field implements IField {
     readonly fieldHeight: number;
@@ -57,13 +57,7 @@ class Field implements IField {
     }
 
     restart(): void {
-        Array.from({length: this.fieldWidth}, (_, indexY) => {
-
-            Array.from({length: this.fieldHeight}, (_, indexX) => {
-                this.tiles[indexY][indexX].resetTile();
-            })
-
-        });
+        Array.from(this.getTiles(), tile => tile.resetTile());
 
         this.tilesLeft = this.fieldHeight * this.fieldHeight - this.mineQuantity;
         this.setMines();
@@ -71,6 +65,7 @@ class Field implements IField {
 
     decreaseTilesLeft(isLose: boolean): void {
         this.tilesLeft--;
+        console.log(this.tilesLeft, 'left')
 
         if (!this.tilesLeft) {
             if (isLose) {
@@ -78,29 +73,26 @@ class Field implements IField {
             } else {
                 // this.smile.setWinFrame();
 
-                Array.from({length: this.fieldWidth}, (_, indexY) => {
-
-                    Array.from({length: this.fieldHeight}, (_, indexX) => {
-                        const tileInstance = this.tiles[indexY][indexX];
-
-                        if (tileInstance.currentState === tileInstance.states.notPressedMine) {
-                            tileInstance.tile.gotoAndStop(tileInstance.states.flag);
-                            tileInstance.tile.interactive = false;
-                        }
-                    })
-
-                });
+                this.setFlagsOnMines();
             }
 
             // this.timer.stop();
         }
     }
 
-    getRandomTile(): ITile {
-        const randomRow = Math.floor(Math.random() * this.fieldWidth);
-        const randomColumn = Math.floor(Math.random() * this.fieldHeight);
+    setFlagsOnMines(): void {
+        const mines: Array<ITile> = this.getTiles().filter(tile => tile.currentState === tile.states.notPressedMine);
 
-        return this.tiles[randomRow][randomColumn];
+        Array.from(mines, mine => {
+            mine.tile.gotoAndStop(mine.states.flag);
+            mine.tile.interactive = false;
+        });
+    }
+
+    getRandomTile(): ITile {
+        const tiles: Array<ITile> = this.getTiles();
+
+        return tiles[Math.floor(Math.random() * tiles.length)];
     }
 
     setMines(): void {
@@ -124,8 +116,18 @@ class Field implements IField {
         })
     };
 
+    openDispatch(isGameOver: boolean, tile: ITile): void {
+        this.openCells(isGameOver ? this.getTiles() : this.getSurroundingTiles(tile), isGameOver);
+    }
+
+    openCells(tiles: Array<ITile>, isGameOver: boolean) {
+        Array.from(tiles, tile => {
+            !tile.isOpened() && tile.open(false, isGameOver)
+        });
+    }
+
     getSurroundingTiles(tile: ITile): Array<ITile> {
-        const tileList = [];
+        const tileList: Array<ITile> = [];
 
         for (let x = -1; x <= 1; x++) {
             for (let y = -1; y <= 1; y++) {
@@ -147,44 +149,8 @@ class Field implements IField {
         return tileList;
     }
 
-    openDispatch(isGameOver: boolean, tile: ITile): void {
-        isGameOver ? this.openAllCells() : this.openEmptyTiles(tile);
-    }
-
-    openAllCells(): void {
-        Array.from({length: this.fieldWidth}, (_, indexY) => {
-
-            Array.from({length: this.fieldHeight}, (_, indexX) => {
-                const tile: ITile = this.tiles[indexY][indexX];
-
-                !tile.isOpened() && tile.open(false, true);
-            })
-
-        });
-    }
-
-    openEmptyTiles(tile: ITile): void {
-        const tileList = [tile];
-        let surroundingTiles;
-        let currentTile;
-
-        while (tileList.length) {
-            currentTile = tileList[0];
-            surroundingTiles = this.getSurroundingTiles(currentTile);
-
-            while (surroundingTiles.length) {
-                currentTile = surroundingTiles.shift();
-
-                if (currentTile.isOpened()) {
-                    continue;
-                }
-
-                currentTile.open(false, false);
-                !currentTile.getValue() && tileList.push(currentTile);
-            }
-
-            tileList.shift();
-        }
+    getTiles(): Array<ITile> {
+        return this.tiles.reduce((acc, tile) => [...acc, ...tile], []);
     }
 }
 

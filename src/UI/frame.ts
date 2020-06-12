@@ -1,5 +1,5 @@
 import {Container, Sprite} from "pixi.js";
-import {ConfigType} from "../types";
+import {ConfigType} from "../typing/types";
 
 const createWalls = ({textures, tileSize, fieldWidth, fieldHeight, container}: ConfigType): void => {
     const borderVertLeft = new Sprite(textures['border_vert.png']);

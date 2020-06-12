@@ -1,8 +1,9 @@
 import {Application, LoaderResource, Container} from 'pixi.js'
-import {createFrame} from "../frame/frame";
-import {ConfigType} from "../types";
-import {Field} from "../board/board";
-import {Smile, Timer} from "../menu/menu"
+import {createFrame} from "./frame";
+import {ConfigType} from "../typing/types";
+import {Field} from "./field";
+import {Timer} from "./timer"
+import {Smile} from "./smileBtn";
 
 const config: ConfigType = {
     tileSize: 40,
@@ -32,7 +33,7 @@ const createScene = (app: Application, resources: Partial<Record<string, LoaderR
         fieldWidth: config.fieldWidth
     });
 
-    const timerContainer = timer.create();
+    const timerContainer: Container = timer.create();
 
     const smile = new Smile({
         textures: resources.smileSheet.textures,
@@ -44,7 +45,7 @@ const createScene = (app: Application, resources: Partial<Record<string, LoaderR
 
     const smileButton = smile.create();
 
-    const frameContainer = createFrame({
+    const frameContainer: Container = createFrame({
         textures: resources.wallsSheet.textures,
         tileSize: config.tileSize,
         fieldWidth: config.fieldWidth,

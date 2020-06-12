@@ -1,5 +1,5 @@
 import {Application} from 'pixi.js'
-import {createScene} from "./scene/scene";
+import {createScene} from "./UI/scene";
 
 const createApp = (): void => {
     const app = new Application({
@@ -20,15 +20,14 @@ const createApp = (): void => {
         .add('smileSheet', 'assets/smile.json')
         .add('numbersSheet', 'assets/numbers.json')
         .add('wallsSheet', 'assets/walls.json')
-        // .add('numbsBg', 'assets/nums_background.svg')
         .load(({resources}): void => createScene(app, resources));
 
     app.start();
-    //
-    // window.addEventListener('resize', () => {
-    //     app.stage.width = window.innerWidth;
-    //     app.stage.height = window.innerHeight;
-    // })
+
+    window.addEventListener('resize', () => {
+        app.stage.width = window.innerWidth;
+        app.stage.height = window.innerHeight;
+    })
 };
 
 createApp();
