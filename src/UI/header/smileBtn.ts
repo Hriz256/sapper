@@ -1,18 +1,23 @@
-import {ISmile} from "../typing/interfaces";
+import {IField, IMinesCounter, ISmile, ITimer} from "../../typing/interfaces";
 import {AnimatedSprite} from "pixi.js";
+import {SmileType} from "../../typing/types";
 
 class Smile implements ISmile {
     readonly fieldWidth: number;
     readonly textures: object;
     readonly tileSize: number;
     smile: AnimatedSprite;
+    timer: ITimer;
+    minesCount: IMinesCounter;
+    field: IField;
 
-    constructor({tileSize, fieldWidth, textures}) {
+    constructor({tileSize, fieldWidth, textures, field, timer, minesCount}: SmileType) {
         this.textures = textures;
         this.tileSize = tileSize;
         this.fieldWidth = fieldWidth;
-        // this.field = field;
-        // this.timer = timer;
+        this.field = field;
+        this.timer = timer;
+        this.minesCount = minesCount;
     }
 
     create(): AnimatedSprite {
@@ -28,9 +33,7 @@ class Smile implements ISmile {
         this.smile.buttonMode = true;
 
         this.smile.on('pointerup', () => {
-            this.smile.gotoAndStop(1);
-            // timer.reset();
-            // field.restart();
+            this.restart();
 
             setTimeout(this.setInitFrame.bind(this), 150);
         });
@@ -38,15 +41,22 @@ class Smile implements ISmile {
         return this.smile;
     }
 
-    setInitFrame() {
+    restart(): void {
+        this.smile.gotoAndStop(1);
+        this.timer.reset();
+        this.minesCount.update(10);
+        this.field.restart();
+    }
+
+    setInitFrame(): void {
         this.smile.gotoAndStop(0);
     }
 
-    setWinFrame() {
+    setWinFrame(): void {
         this.smile.gotoAndStop(3);
     }
 
-    setLoseFrame() {
+    setLoseFrame(): void {
         this.smile.gotoAndStop(2);
     }
 }

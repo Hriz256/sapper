@@ -23,11 +23,6 @@ const createApp = (): void => {
         .load(({resources}): void => createScene(app, resources));
 
     app.start();
-
-    window.addEventListener('resize', () => {
-        app.view.width = window.innerWidth;
-        app.view.height = window.innerHeight;
-    })
 };
 
 createApp();

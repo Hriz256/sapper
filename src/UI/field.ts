@@ -1,7 +1,7 @@
 import {Tile} from "./tile";
 import {ConfigType} from "../typing/types";
 import {Container} from "pixi.js";
-import {IField, ITile} from "../typing/interfaces";
+import {IField, IMinesCounter, ISmile, ITile, ITimer} from "../typing/interfaces";
 
 class Field implements IField {
     readonly fieldHeight: number;
@@ -9,10 +9,11 @@ class Field implements IField {
     readonly mineQuantity: number;
     readonly textures: object;
     readonly tileSize: number;
-    smile: object;
     tiles: ITile[][];
     tilesLeft: number;
-    timer: object;
+    timer: ITimer;
+    smile: ISmile;
+    minesCount: IMinesCounter;
 
     constructor({textures, tileSize, fieldWidth, fieldHeight, mineQuantity}: ConfigType) {
         this.textures = textures;
@@ -23,9 +24,10 @@ class Field implements IField {
         this.tilesLeft = this.fieldHeight * this.fieldHeight - this.mineQuantity;
     }
 
-    create(): Container {
-        // this.smile = smile;
-        // this.timer = timer;
+    create(timer: ITimer, minesCount: IMinesCounter, smile: ISmile): Container {
+        this.smile = smile;
+        this.timer = timer;
+        this.minesCount = minesCount;
 
         const container = new Container();
 
@@ -39,7 +41,7 @@ class Field implements IField {
                     y: indexY,
                     openDispatchCallback: this.openDispatch.bind(this),
                     tilesLeftCallback: this.decreaseTilesLeft.bind(this),
-                    // timer
+                    getQuantityFlagsCallback: this.getQuantityFlags.bind(this)
                 });
 
                 tileInstance.create();
@@ -51,9 +53,16 @@ class Field implements IField {
 
         });
 
+        this.minesCount.update(10);
         this.setMines();
 
         return container;
+    }
+
+    getQuantityFlags(): void {
+        const quantityFlags = this.getTiles().filter(tile => tile.isSetFlag()).length;
+
+        this.minesCount.update(this.mineQuantity - quantityFlags);
     }
 
     restart(): void {
@@ -69,14 +78,13 @@ class Field implements IField {
 
         if (!this.tilesLeft) {
             if (isLose) {
-                // this.smile.setLoseFrame()
+                this.smile.setLoseFrame()
             } else {
-                // this.smile.setWinFrame();
-
+                this.smile.setWinFrame();
                 this.setFlagsOnMines();
             }
 
-            // this.timer.stop();
+            this.timer.stop();
         }
     }
 
@@ -121,6 +129,8 @@ class Field implements IField {
         Array.from(tiles, tile => {
             !tile.isOpened() && tile.open(false, isGameOver)
         });
+
+        this.getQuantityFlags();
     }
 
     getSurroundingTiles(tile: ITile): Array<ITile> {

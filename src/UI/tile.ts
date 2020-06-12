@@ -9,19 +9,21 @@ class Tile implements ITile {
     readonly textures: object;
     readonly tileSize: number;
     readonly tilesLeftCallback: (isLose: boolean) => void;
+    readonly getQuantityFlagsCallback: () => void;
     readonly timer: () => void;
     readonly x: number;
     readonly y: number;
     currentState: number;
     tile: PIXI.AnimatedSprite;
 
-    constructor({tileSize, textures, x, y, openDispatchCallback, tilesLeftCallback}: TileType) {
+    constructor({tileSize, textures, x, y, openDispatchCallback, tilesLeftCallback, getQuantityFlagsCallback}: TileType) {
         this.tileSize = tileSize;
         this.textures = textures;
         this.x = x;
         this.y = y;
         this.openDispatchCallback = openDispatchCallback;
         this.tilesLeftCallback = tilesLeftCallback;
+        this.getQuantityFlagsCallback = getQuantityFlagsCallback;
         // this.timer = timer;
 
         this.states = {
@@ -54,13 +56,18 @@ class Tile implements ITile {
         // !this.timer.allowUpdate && this.timer.start();
 
         !event.data.button ?
-            this.tile.currentFrame !== this.states.flag && this.open(true, false) :
+            !this.isSetFlag() && this.open(true, false) :
             this.setFlag(true, this.tile.currentFrame !== this.states.flag);
     }
 
     setFlag(interactive: boolean, active: boolean): void {
         this.tile.gotoAndStop(active ? this.states.flag : this.states.default);
         this.tile.interactive = interactive;
+        this.getQuantityFlagsCallback();
+    }
+
+    isSetFlag(): boolean {
+        return this.tile.currentFrame === this.states.flag;
     }
 
     setValue(value: number): void {
