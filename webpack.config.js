@@ -4,8 +4,8 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    context: path.resolve(__dirname, 'src'), // относительно какой папки мы работаем
-    mode: 'development', // иначе ставится продакшн и код минифицируется
+    context: path.resolve(__dirname, 'src'),
+    mode: 'development',
     entry: './app.ts',
     devtool: 'inline-source-map',
     module: {
@@ -19,10 +19,6 @@ module.exports = {
                 test: /\.(png|jpg|svg)$/,
                 use: ['file-loader']
             },
-            {
-                test: /\.(ttf|woff)$/,
-                use: ['file-loader']
-            }
         ],
     },
     resolve: {

@@ -15,7 +15,7 @@ class Timer extends Counter implements ITimer {
     update(): void {
         const newDate = `${Math.floor((Date.now() - this.date) / 1000)}`.split('').reverse();
 
-        !this.allowUpdate && Array.from(this.numbers, (number, index) => {
+        this.allowUpdate && Array.from(this.numbers, (number, index) => {
             number.gotoAndStop(+newDate[index] || 0)
         });
     }
@@ -29,9 +29,15 @@ class Timer extends Counter implements ITimer {
         this.allowUpdate = false;
     }
 
-    start(): void {
-        this.date = Date.now();
+    continue(): void {
         this.allowUpdate = true;
+    }
+
+    start(): void {
+        if (!this.allowUpdate) {
+            this.date = Date.now();
+            this.continue();
+        }
     }
 }
 

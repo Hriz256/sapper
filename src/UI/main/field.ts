@@ -1,9 +1,11 @@
 import {Tile} from "./tile";
-import {ConfigType} from "../typing/types";
+import {ConfigType, OpenDispatchType} from "../../typing/types";
 import {Container} from "pixi.js";
-import {IField, IMinesCounter, ISmile, ITile, ITimer} from "../typing/interfaces";
+import {IField, ITile, ITimer} from "../../typing/interfaces";
+import {Subscriber} from "../../logic/subscriber";
+import {mediator} from "../../logic/mediator";
 
-class Field implements IField {
+class Field extends Subscriber implements IField {
     readonly fieldHeight: number;
     readonly fieldWidth: number;
     readonly mineQuantity: number;
@@ -12,10 +14,10 @@ class Field implements IField {
     tiles: ITile[][];
     tilesLeft: number;
     timer: ITimer;
-    smile: ISmile;
-    minesCount: IMinesCounter;
 
     constructor({textures, tileSize, fieldWidth, fieldHeight, mineQuantity}: ConfigType) {
+        super();
+
         this.textures = textures;
         this.tileSize = tileSize;
         this.fieldWidth = fieldWidth;
@@ -24,11 +26,7 @@ class Field implements IField {
         this.tilesLeft = this.fieldHeight * this.fieldHeight - this.mineQuantity;
     }
 
-    create(timer: ITimer, minesCount: IMinesCounter, smile: ISmile): Container {
-        this.smile = smile;
-        this.timer = timer;
-        this.minesCount = minesCount;
-
+    create(): Container {
         const container = new Container();
 
         this.tiles = Array.from({length: this.fieldWidth}, (_, indexX) => {
@@ -39,10 +37,9 @@ class Field implements IField {
                     tileSize: this.tileSize,
                     x: indexX,
                     y: indexY,
-                    openDispatchCallback: this.openDispatch.bind(this),
-                    tilesLeftCallback: this.decreaseTilesLeft.bind(this),
-                    getQuantityFlagsCallback: this.getQuantityFlags.bind(this)
                 });
+
+                mediator.register(tileInstance, `tileInstance[${indexX}][${indexY}]`);
 
                 tileInstance.create();
 
@@ -53,7 +50,7 @@ class Field implements IField {
 
         });
 
-        this.minesCount.update(10);
+        this.sendAction({action: 'update', to: 'minesCount', value: 10});
         this.setMines();
 
         return container;
@@ -62,7 +59,7 @@ class Field implements IField {
     getQuantityFlags(): void {
         const quantityFlags = this.getTiles().filter(tile => tile.isSetFlag()).length;
 
-        this.minesCount.update(this.mineQuantity - quantityFlags);
+        this.sendAction({action: 'update', to: 'minesCount', value: this.mineQuantity - quantityFlags});
     }
 
     restart(): void {
@@ -74,17 +71,16 @@ class Field implements IField {
 
     decreaseTilesLeft(isLose: boolean): void {
         this.tilesLeft--;
-        console.log(this.tilesLeft, 'left')
 
         if (!this.tilesLeft) {
             if (isLose) {
-                this.smile.setLoseFrame()
+                this.sendAction({action: 'setLoseFrame', to: 'smile'});
             } else {
-                this.smile.setWinFrame();
+                this.sendAction({action: 'setWinFrame', to: 'smile'});
                 this.setFlagsOnMines();
             }
 
-            this.timer.stop();
+            this.sendAction({action: 'stop', to: 'timer'});
         }
     }
 
@@ -92,6 +88,10 @@ class Field implements IField {
         const mines: Array<ITile> = this.getTiles().filter(tile => tile.currentState === tile.states.notPressedMine);
 
         Array.from(mines, mine => mine.setFlag(false, true));
+    }
+
+    toggleTilesInteractive(interactive: boolean): void {
+        Array.from(this.getTiles(), tile => tile.setInteractive(interactive));
     }
 
     getRandomTile(): ITile {
@@ -114,24 +114,12 @@ class Field implements IField {
     }
 
     updateSurroundingTiles(tile: ITile): void {
-        const surroundingTiles: Array<ITile> = this.getSurroundingTiles(tile);
-
-        Array.from(surroundingTiles, tile => {
-            tile.getValue() !== tile.states.notPressedMine && tile.setValue(tile.getValue() + 1)
-        })
-    };
-
-    openDispatch(isGameOver: boolean, tile: ITile): void {
-        this.openCells(isGameOver ? this.getTiles() : this.getSurroundingTiles(tile), isGameOver);
-    }
-
-    openCells(tiles: Array<ITile>, isGameOver: boolean) {
-        Array.from(tiles, tile => {
-            !tile.isOpened() && tile.open(false, isGameOver)
+        const tilesWithoutMines: Array<ITile> = this.getSurroundingTiles(tile).filter(tile => {
+            return tile.getValue() !== tile.states.notPressedMine;
         });
 
-        this.getQuantityFlags();
-    }
+        Array.from(tilesWithoutMines, tile => tile.setValue(tile.getValue() + 1));
+    };
 
     getSurroundingTiles(tile: ITile): Array<ITile> {
         const tileList: Array<ITile> = [];
@@ -154,6 +142,18 @@ class Field implements IField {
         }
 
         return tileList;
+    }
+
+    openDispatch({isGameOver, tile}: OpenDispatchType): void {
+        this.openCells(isGameOver ? this.getTiles() : this.getSurroundingTiles(tile), isGameOver);
+    }
+
+    openCells(tiles: Array<ITile>, isGameOver: boolean) {
+        Array.from(tiles, tile => {
+            !tile.isOpened() && tile.open(false, isGameOver)
+        });
+
+        this.getQuantityFlags();
     }
 
     getTiles(): Array<ITile> {

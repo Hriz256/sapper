@@ -1,5 +1,6 @@
 import {Container, Sprite} from "pixi.js";
-import {ConfigType} from "../typing/types";
+import {ConfigType} from "../../typing/types";
+import {createBg} from '../createBg';
 
 const createWalls = ({textures, tileSize, fieldWidth, fieldHeight, container}: ConfigType): void => {
     const borderVertLeft = new Sprite(textures['border_vert.png']);
@@ -72,8 +73,17 @@ const createCorner = ({textures, tileSize, fieldHeight, fieldWidth, container}: 
 const createFrame = (parameters: ConfigType): Container => {
     const container = new Container();
 
+    const bg = createBg({
+        posX: parameters.tileSize * 0.7,
+        posY: parameters.tileSize * 0.7,
+        width: parameters.tileSize * parameters.fieldWidth,
+        height: parameters.tileSize * 2
+    });
+
     createWalls({...parameters, container});
     createCorner({...parameters, container});
+
+    container.addChild(bg);
 
     return container;
 };

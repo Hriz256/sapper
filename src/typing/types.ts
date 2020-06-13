@@ -1,5 +1,5 @@
 import {Container} from "pixi.js";
-import {IField, IMinesCounter, ITile, ITimer} from "./interfaces";
+import {ITile} from "./interfaces";
 
 export type ConfigType = {
     textures?: object | null
@@ -23,9 +23,6 @@ export type SmileType = {
     textures?: object
     tileSize: number
     fieldWidth: number
-    timer: ITimer
-    minesCount: IMinesCounter
-    field: IField
 }
 
 export type CounterType = {
@@ -33,13 +30,34 @@ export type CounterType = {
     posX: number
 }
 
+export type ActionData = {
+    action: string
+    to: string
+    value?: any
+}
+
 export type TileType = {
     tileSize: number
     textures: object
     x: number
     y: number
-    openDispatchCallback: (isGameOver: boolean, tile: ITile) => void
-    tilesLeftCallback: () => void
-    getQuantityFlagsCallback: () => void
-    timer?: () => void;
+}
+
+export type GraphicsRectType = {
+    width: number
+    height: number
+    posX: number
+    posY: number
+}
+
+export type ButtonType = {
+    fontSize: number
+    text: string
+    anchorY: number
+    bgVisibility?: boolean
+}
+
+export type OpenDispatchType = {
+    isGameOver: boolean
+    tile: ITile
 }

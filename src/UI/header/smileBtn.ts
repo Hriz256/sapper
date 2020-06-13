@@ -1,23 +1,20 @@
-import {IField, IMinesCounter, ISmile, ITimer} from "../../typing/interfaces";
+import {ISmile} from "../../typing/interfaces";
 import {AnimatedSprite} from "pixi.js";
 import {SmileType} from "../../typing/types";
+import {Subscriber} from "../../logic/subscriber";
 
-class Smile implements ISmile {
+class Smile extends Subscriber implements ISmile {
     readonly fieldWidth: number;
     readonly textures: object;
     readonly tileSize: number;
     smile: AnimatedSprite;
-    timer: ITimer;
-    minesCount: IMinesCounter;
-    field: IField;
 
-    constructor({tileSize, fieldWidth, textures, field, timer, minesCount}: SmileType) {
+    constructor({tileSize, fieldWidth, textures}: SmileType) {
+        super();
+
         this.textures = textures;
         this.tileSize = tileSize;
         this.fieldWidth = fieldWidth;
-        this.field = field;
-        this.timer = timer;
-        this.minesCount = minesCount;
     }
 
     create(): AnimatedSprite {
@@ -33,19 +30,19 @@ class Smile implements ISmile {
         this.smile.buttonMode = true;
 
         this.smile.on('pointerup', () => {
+            this.smile.gotoAndStop(1);
             this.restart();
-
-            setTimeout(this.setInitFrame.bind(this), 150);
         });
 
         return this.smile;
     }
 
     restart(): void {
-        this.smile.gotoAndStop(1);
-        this.timer.reset();
-        this.minesCount.update(10);
-        this.field.restart();
+        this.sendAction({action: 'reset', to: 'timer'});
+        this.sendAction({action: 'update', to: 'minesCount', value: 10});
+        this.sendAction({action: 'restart', to: 'field'});
+
+        setTimeout(this.setInitFrame.bind(this), 150);
     }
 
     setInitFrame(): void {

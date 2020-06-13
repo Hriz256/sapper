@@ -1,30 +1,25 @@
 import {AnimatedSprite} from 'pixi.js'
 import InteractionEvent = PIXI.interaction.InteractionEvent;
-import {ITile} from "../typing/interfaces";
-import {StatesType, TileType} from "../typing/types";
+import {ITile} from "../../typing/interfaces";
+import {StatesType, TileType} from "../../typing/types";
+import {Subscriber} from "../../logic/subscriber";
 
-class Tile implements ITile {
-    readonly openDispatchCallback: (isGameOver: boolean, tile: ITile) => void;
+class Tile extends Subscriber implements ITile {
     readonly states: StatesType;
     readonly textures: object;
     readonly tileSize: number;
-    readonly tilesLeftCallback: (isLose: boolean) => void;
-    readonly getQuantityFlagsCallback: () => void;
-    readonly timer: () => void;
     readonly x: number;
     readonly y: number;
     currentState: number;
-    tile: PIXI.AnimatedSprite;
+    tile: AnimatedSprite;
 
-    constructor({tileSize, textures, x, y, openDispatchCallback, tilesLeftCallback, getQuantityFlagsCallback}: TileType) {
+    constructor({tileSize, textures, x, y}: TileType) {
+        super();
+
         this.tileSize = tileSize;
         this.textures = textures;
         this.x = x;
         this.y = y;
-        this.openDispatchCallback = openDispatchCallback;
-        this.tilesLeftCallback = tilesLeftCallback;
-        this.getQuantityFlagsCallback = getQuantityFlagsCallback;
-        // this.timer = timer;
 
         this.states = {
             init: 0,
@@ -47,23 +42,27 @@ class Tile implements ITile {
         this.tile.height = this.tileSize;
         this.tile.x = this.tileSize * 0.7 + this.tileSize * this.x;
         this.tile.y = this.tileSize * 0.7 * 2 + this.tileSize * (this.y + 2);
-        this.tile.interactive = true;
         this.tile.buttonMode = true;
+        this.setInteractive(true);
         this.tile.on('pointerdown', this.buttonDown.bind(this))
     }
 
     buttonDown(event: InteractionEvent): void {
-        // !this.timer.allowUpdate && this.timer.start();
+        this.sendAction({action: 'start', to: 'timer'});
 
         !event.data.button ?
             !this.isSetFlag() && this.open(true, false) :
-            this.setFlag(true, this.tile.currentFrame !== this.states.flag);
+            this.setFlag(true, !this.isSetFlag());
     }
 
     setFlag(interactive: boolean, active: boolean): void {
         this.tile.gotoAndStop(active ? this.states.flag : this.states.default);
         this.tile.interactive = interactive;
-        this.getQuantityFlagsCallback();
+        this.sendAction({action: 'getQuantityFlags', to: 'field'});
+    }
+
+    setInteractive(interactive: boolean): void {
+        this.tile.interactive = interactive;
     }
 
     isSetFlag(): boolean {
@@ -85,7 +84,7 @@ class Tile implements ITile {
     resetTile(): void {
         this.setValue(0);
         this.tile.gotoAndStop(this.states.default);
-        this.tile.interactive = true;
+        this.setInteractive(true);
     }
 
     open(byUser: boolean, isGameOver: boolean = false): void {
@@ -95,7 +94,7 @@ class Tile implements ITile {
                 this.tile.currentFrame === this.states.flag && this.setValue(this.states.flag);
 
                 this.tile.gotoAndStop(this.currentState);
-                !isGameOver && this.openDispatchCallback(true, this);
+                !isGameOver && this.sendAction({action: 'openDispatch', to: 'field', value: {isGameOver: true, tile: this}});
 
                 break;
             case this.states.init:
@@ -104,8 +103,8 @@ class Tile implements ITile {
                 }
 
                 this.tile.gotoAndStop(this.currentState);
-                this.tilesLeftCallback(isGameOver);
-                !isGameOver && this.openDispatchCallback(false, this);
+                this.sendAction({action: 'decreaseTilesLeft', to: 'field', value: isGameOver});
+                !isGameOver && this.sendAction({action: 'openDispatch', to: 'field', value: {isGameOver: false, tile: this}});
 
                 break;
             default:
@@ -114,10 +113,10 @@ class Tile implements ITile {
                 }
 
                 this.tile.gotoAndStop(this.currentState);
-                this.tilesLeftCallback(isGameOver);
+                this.sendAction({action: 'decreaseTilesLeft', to: 'field', value: isGameOver});
         }
 
-        this.tile.interactive = false;
+        this.setInteractive(false);
     }
 }
 

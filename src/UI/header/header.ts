@@ -2,10 +2,13 @@ import {Timer} from "./counter/timer";
 import {MinesCounter} from "./counter/minesCounter";
 import {Smile} from "./smileBtn";
 import {ConfigType} from "../../typing/types";
-import {LoaderResource} from "pixi.js";
-import {IField, IMinesCounter, ISmile, ITimer} from "../../typing/interfaces";
+import {LoaderResource, Container} from "pixi.js";
+import {mediator} from "../../logic/mediator";
+import {ITimer} from "../../typing/interfaces";
 
-const createHeader = (config: ConfigType, resources: Partial<Record<string, LoaderResource>>, field: IField): [ITimer, IMinesCounter, ISmile] => {
+const createHeader = (config: ConfigType, resources: Partial<Record<string, LoaderResource>>): {headerContainer: Container, timer: ITimer} => {
+    const headerContainer = new Container();
+
     const timer = new Timer({
         textures: resources.timeSheet.textures,
         tileSize: config.tileSize,
@@ -26,12 +29,19 @@ const createHeader = (config: ConfigType, resources: Partial<Record<string, Load
         textures: resources.smileSheet.textures,
         tileSize: config.tileSize,
         fieldWidth: config.fieldWidth,
-        field,
-        timer,
-        minesCount
     });
 
-    return [timer, minesCount, smile];
+    const timerContainer: Container = timer.create();
+    const minesCountContainer: Container = minesCount.create();
+    const smileContainer = smile.create();
+
+    mediator.register(timer, 'timer');
+    mediator.register(minesCount, 'minesCount');
+    mediator.register(smile, 'smile');
+
+    headerContainer.addChild(timerContainer, minesCountContainer, smileContainer);
+
+    return {headerContainer, timer};
 };
 
 export {createHeader};

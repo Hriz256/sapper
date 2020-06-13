@@ -1,8 +1,9 @@
 import {ICounter} from "../../../typing/interfaces";
 import {AnimatedSprite, Container, Sprite} from "pixi.js";
 import {ConfigType, CounterType} from "../../../typing/types";
+import {Subscriber} from "../../../logic/subscriber";
 
-class Counter implements ICounter {
+class Counter extends Subscriber implements ICounter {
     anchorX: number;
     fieldWidth: number;
     tileSize: number;
@@ -11,6 +12,8 @@ class Counter implements ICounter {
     posX: number;
 
     constructor({textures, tileSize, fieldWidth, anchorX, posX}: ConfigType & CounterType) {
+        super();
+
         this.anchorX = anchorX;
         this.textures = textures;
         this.tileSize = tileSize;
