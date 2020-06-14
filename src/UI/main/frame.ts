@@ -2,7 +2,9 @@ import {Container, Sprite} from "pixi.js";
 import {ConfigType} from "../../typing/types";
 import {createBg} from '../createBg';
 
-const createWalls = ({textures, tileSize, fieldWidth, fieldHeight, container}: ConfigType): void => {
+const createWalls = ({textures, tileSize, fieldWidth, fieldHeight}: ConfigType): Container => {
+    const wallsContainer = new Container();
+
     const borderVertLeft = new Sprite(textures['border_vert.png']);
     borderVertLeft.height = tileSize * 0.7 * 3 + tileSize * (fieldHeight + 2);
     borderVertLeft.width = tileSize * 0.7;
@@ -29,12 +31,16 @@ const createWalls = ({textures, tileSize, fieldWidth, fieldHeight, container}: C
     Array.from([borderVertLeft, borderVertRight, borderHorUp, borderHorMiddle, borderHorBottom], wall => {
         wall.anchor.set(0);
 
-        container.addChild(wall);
+        wallsContainer.addChild(wall);
     });
+
+    return wallsContainer;
 };
 
 
-const createCorner = ({textures, tileSize, fieldHeight, fieldWidth, container}: ConfigType): void => {
+const createCorner = ({textures, tileSize, fieldHeight, fieldWidth}: ConfigType): Container => {
+    const cornerContainer = new Container();
+
     const cornerBottomLeft = new Sprite(textures['corner_bottom_left.png']);
     cornerBottomLeft.x = 0;
     cornerBottomLeft.y = tileSize * 0.7 * 2 + tileSize * (fieldHeight + 2);
@@ -66,24 +72,26 @@ const createCorner = ({textures, tileSize, fieldHeight, fieldWidth, container}: 
         corner.height = tileSize * 0.7;
         corner.width = tileSize * 0.7;
 
-        container.addChild(corner);
+        cornerContainer.addChild(corner);
     });
+
+    return cornerContainer;
 };
 
 const createFrame = (parameters: ConfigType): Container => {
     const container = new Container();
 
-    const bg = createBg({
+    const headerBg = createBg({
         posX: parameters.tileSize * 0.7,
         posY: parameters.tileSize * 0.7,
         width: parameters.tileSize * parameters.fieldWidth,
         height: parameters.tileSize * 2
     });
 
-    createWalls({...parameters, container});
-    createCorner({...parameters, container});
+    const wallsContainer = createWalls(parameters);
+    const cornerContainer = createCorner(parameters);
 
-    container.addChild(bg);
+    container.addChild(headerBg, wallsContainer, cornerContainer);
 
     return container;
 };

@@ -7,8 +7,8 @@ class Exit extends Button implements IExit {
         const container = this.create();
 
         this.button.on('pointerup', () => {
-            pauseMenuContainer.visible = !pauseMenuContainer.visible;
-            startGameButtonContainer.visible = !startGameButtonContainer.visible;
+            pauseMenuContainer.visible = !pauseMenuContainer.visible; // Скрываем контейнер паузы
+            startGameButtonContainer.visible = !startGameButtonContainer.visible; // Показыем контейнер с кнопкой начать игру
         });
 
         return container;

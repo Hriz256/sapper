@@ -29,14 +29,16 @@ const resize = (app: Application, container: Container): void => {
 const createScene = (app: Application, resources: Partial<Record<string, LoaderResource>>): void => {
     const mainContainer = new Container();
 
-    const {headerContainer, timer} = createHeader(config, resources);
-    const menuContainer = createMenu(config);
-    const bodyContainer = createBody(config, resources);
+    const {headerContainer, timer} = createHeader(config, resources); // Создаём шапку (2 счётчика и кнопку)
+    const menuContainer = createMenu(config); // Создаём интерфейс меню
+    const bodyContainer = createBody(config, resources); // Создаём игровое поле
 
     mainContainer.addChild(bodyContainer, headerContainer, menuContainer);
 
     app.stage.addChild(mainContainer);
-    app.ticker.add(() => timer.update());
+    app.ticker.add(() => timer.update()); // Обновляем значение таймера
+
+    // центрируем контейнер при создании и каждом ресайзе экрана
 
     centerContainer(app, mainContainer);
     window.addEventListener('resize', () => resize(app, mainContainer))

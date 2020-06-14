@@ -8,7 +8,7 @@ class PauseButton extends Button implements IPauseButton {
 
         this.button.on('pointerup', () => {
             pauseMenuContainer.visible = !pauseMenuContainer.visible;
-            console.log(1)
+
             this.sendAction({action: pauseMenuContainer.visible ? 'stop' : 'continue', to: 'timer'});
             this.sendAction({action: 'toggleTilesInteractive', to: 'field', value: !pauseMenuContainer.visible});
         });

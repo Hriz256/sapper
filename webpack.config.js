@@ -3,6 +3,8 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+const isDev = process.env.NODE_ENV === 'development';
+
 module.exports = {
     context: path.resolve(__dirname, 'src'),
     mode: 'development',
@@ -14,11 +16,7 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
-            },
-            {
-                test: /\.(png|jpg|svg)$/,
-                use: ['file-loader']
-            },
+            }
         ],
     },
     resolve: {
@@ -31,8 +29,18 @@ module.exports = {
     devServer: {
         port: 4200,
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    },
     plugins: [
-        new HTMLWebpackPlugin({template: './index.html'}),
+        new HTMLWebpackPlugin({
+            template: './index.html',
+            minify: {
+                collapseWhitespace: process.env.NODE_ENV !== 'development'
+            }
+        }),
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin([
             {

@@ -29,6 +29,7 @@ const createHeader = (config: ConfigType, resources: Partial<Record<string, Load
         textures: resources.smileSheet.textures,
         tileSize: config.tileSize,
         fieldWidth: config.fieldWidth,
+        mineQuantity: config.mineQuantity
     });
 
     const timerContainer: Container = timer.create();

@@ -15,13 +15,7 @@ class Mediator implements IMediator {
     }
 
     notify({action, to, value}: ActionData): void {
-        if (to) {
-            this.subscribers[to].dispatch(action, value)
-        } else {
-            const subscribersWithoutMeArray = Object.values(this.subscribers).filter(subscriber => subscriber !== this);
-
-            Array.from(subscribersWithoutMeArray, subscriber => subscriber.dispatch(action, value))
-        }
+        this.subscribers[to].dispatch(action, value)
     }
 }
 

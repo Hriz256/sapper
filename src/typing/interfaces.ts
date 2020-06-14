@@ -27,7 +27,6 @@ export interface IField {
     readonly mineQuantity: number
     readonly textures: object
     tilesLeft: number
-    timer: ITimer
     tiles: ITile[][]
     create: () => Container
     restart: () => void
@@ -51,6 +50,8 @@ export interface ICounter extends ISubscriber {
 export interface ITimer extends ICounter {
     date: number
     allowUpdate: boolean
+    isStart: boolean
+    currentDate: number
     update: () => void
     reset: () => void
     stop: () => void
@@ -68,6 +69,7 @@ export interface ISmile extends ISubscriber {
     readonly tileSize: number
     readonly textures: object
     readonly fieldWidth: number
+    readonly mineQuantity: number
     smile: AnimatedSprite
     create: () => AnimatedSprite
     restart: () => void

@@ -1,7 +1,7 @@
 import {Tile} from "./tile";
 import {ConfigType, OpenDispatchType} from "../../typing/types";
 import {Container} from "pixi.js";
-import {IField, ITile, ITimer} from "../../typing/interfaces";
+import {IField, ITile} from "../../typing/interfaces";
 import {Subscriber} from "../../logic/subscriber";
 import {mediator} from "../../logic/mediator";
 
@@ -13,7 +13,6 @@ class Field extends Subscriber implements IField {
     readonly tileSize: number;
     tiles: ITile[][];
     tilesLeft: number;
-    timer: ITimer;
 
     constructor({textures, tileSize, fieldWidth, fieldHeight, mineQuantity}: ConfigType) {
         super();
@@ -50,12 +49,13 @@ class Field extends Subscriber implements IField {
 
         });
 
-        this.sendAction({action: 'update', to: 'minesCount', value: 10});
+        this.sendAction({action: 'update', to: 'minesCount', value: this.mineQuantity});
         this.setMines();
 
         return container;
     }
 
+    // вызывается при каждом клике и уведомляет счётчик мин
     getQuantityFlags(): void {
         const quantityFlags = this.getTiles().filter(tile => tile.isSetFlag()).length;
 
@@ -69,8 +69,11 @@ class Field extends Subscriber implements IField {
         this.setMines();
     }
 
+    // уменьшает количество оставшихся клеток, которые не являются минами
     decreaseTilesLeft(isLose: boolean): void {
         this.tilesLeft--;
+
+        console.log(this.tilesLeft)
 
         if (!this.tilesLeft) {
             if (isLose) {
@@ -84,12 +87,14 @@ class Field extends Subscriber implements IField {
         }
     }
 
+    // Если игрок выиграл, но он где-то не поставил флажок - ставим
     setFlagsOnMines(): void {
         const mines: Array<ITile> = this.getTiles().filter(tile => tile.currentState === tile.states.notPressedMine);
 
         Array.from(mines, mine => mine.setFlag(false, true));
     }
 
+    // Выключаем интерактивность у каждой клетки (например, когда игрок открывает меню)
     toggleTilesInteractive(interactive: boolean): void {
         Array.from(this.getTiles(), tile => tile.setInteractive(interactive));
     }
@@ -100,6 +105,7 @@ class Field extends Subscriber implements IField {
         return tiles[Math.floor(Math.random() * tiles.length)];
     }
 
+    // При инициализации игры устанавливаем мины
     setMines(): void {
         let tile: ITile = this.getRandomTile();
 
@@ -113,6 +119,7 @@ class Field extends Subscriber implements IField {
         });
     }
 
+    // Вызывается при каждой установки мины. Величина соседних клеток мины увеличивается на 1
     updateSurroundingTiles(tile: ITile): void {
         const tilesWithoutMines: Array<ITile> = this.getSurroundingTiles(tile).filter(tile => {
             return tile.getValue() !== tile.states.notPressedMine;
@@ -121,6 +128,7 @@ class Field extends Subscriber implements IField {
         Array.from(tilesWithoutMines, tile => tile.setValue(tile.getValue() + 1));
     };
 
+    // Получить соседние элементы клетки
     getSurroundingTiles(tile: ITile): Array<ITile> {
         const tileList: Array<ITile> = [];
 
@@ -156,6 +164,7 @@ class Field extends Subscriber implements IField {
         this.getQuantityFlags();
     }
 
+    // Получить все клетки
     getTiles(): Array<ITile> {
         return this.tiles.reduce((acc, tile) => [...acc, ...tile], []);
     }

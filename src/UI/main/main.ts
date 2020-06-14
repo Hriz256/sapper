@@ -7,6 +7,7 @@ import {ConfigType} from "../../typing/types";
 const createBody = (config: ConfigType, resources: Partial<Record<string, LoaderResource>>): Container => {
     const bodyContainer = new Container();
 
+    // создаём поле с кнопками
     const field = new Field({
         textures: {
             ...resources.numbersSheet.textures,
@@ -19,6 +20,7 @@ const createBody = (config: ConfigType, resources: Partial<Record<string, Loader
         mineQuantity: config.mineQuantity
     });
 
+    // создаём статические визуальные элементы
     const frameContainer: Container = createFrame({
         textures: resources.wallsSheet.textures,
         tileSize: config.tileSize,

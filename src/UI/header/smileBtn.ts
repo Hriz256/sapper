@@ -1,20 +1,22 @@
 import {ISmile} from "../../typing/interfaces";
 import {AnimatedSprite} from "pixi.js";
-import {SmileType} from "../../typing/types";
+import {ConfigType} from "../../typing/types";
 import {Subscriber} from "../../logic/subscriber";
 
 class Smile extends Subscriber implements ISmile {
     readonly fieldWidth: number;
     readonly textures: object;
     readonly tileSize: number;
+    readonly mineQuantity: number;
     smile: AnimatedSprite;
 
-    constructor({tileSize, fieldWidth, textures}: SmileType) {
+    constructor({tileSize, fieldWidth, textures, mineQuantity}: ConfigType) {
         super();
 
         this.textures = textures;
         this.tileSize = tileSize;
         this.fieldWidth = fieldWidth;
+        this.mineQuantity = mineQuantity;
     }
 
     create(): AnimatedSprite {
@@ -37,9 +39,10 @@ class Smile extends Subscriber implements ISmile {
         return this.smile;
     }
 
+    // При нажатии на кнопку вызывается рестарт игры и отправляются соответствующие уведомления другим элементам
     restart(): void {
         this.sendAction({action: 'reset', to: 'timer'});
-        this.sendAction({action: 'update', to: 'minesCount', value: 10});
+        this.sendAction({action: 'update', to: 'minesCount', value: this.mineQuantity});
         this.sendAction({action: 'restart', to: 'field'});
 
         setTimeout(this.setInitFrame.bind(this), 150);

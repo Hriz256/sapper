@@ -2,6 +2,7 @@ import {Application} from 'pixi.js'
 import {createScene} from "./UI/scene";
 
 const createApp = (): void => {
+    // инициализируем приложение
     const app = new Application({
         width: window.innerWidth,
         height: window.innerHeight,

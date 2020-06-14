@@ -10,10 +10,12 @@ class MinesCounter extends Counter implements IMinesCounter {
     }
 
     format(count: number): string {
+        // Добавляем нужное число 0 перед числом
         return `${'0'.repeat(3 - `${count}`.length)}${count}`;
     }
 
     getFrameIndex(formatCount: string): Array<number> {
+        // Цифры от 0 до 9 соответствуют названиям фреймов, 10 - '-'
         return Array.from(formatCount, letter => letter !== '-' ? +letter : +10)
     }
 }

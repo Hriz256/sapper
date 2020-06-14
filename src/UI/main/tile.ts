@@ -1,5 +1,4 @@
 import {AnimatedSprite} from 'pixi.js'
-import InteractionEvent = PIXI.interaction.InteractionEvent;
 import {ITile} from "../../typing/interfaces";
 import {StatesType, TileType} from "../../typing/types";
 import {Subscriber} from "../../logic/subscriber";
@@ -47,14 +46,15 @@ class Tile extends Subscriber implements ITile {
         this.tile.on('pointerdown', this.buttonDown.bind(this))
     }
 
-    buttonDown(event: InteractionEvent): void {
-        this.sendAction({action: 'start', to: 'timer'});
+    buttonDown(event): void {
+        this.sendAction({action: 'start', to: 'timer'}); // Клетка была нажата - таймер начинает отсчёт
 
         !event.data.button ?
             !this.isSetFlag() && this.open(true, false) :
             this.setFlag(true, !this.isSetFlag());
     }
 
+    // Поставить / снять флажок
     setFlag(interactive: boolean, active: boolean): void {
         this.tile.gotoAndStop(active ? this.states.flag : this.states.default);
         this.tile.interactive = interactive;
@@ -81,6 +81,7 @@ class Tile extends Subscriber implements ITile {
         return this.tile.currentFrame === this.currentState;
     }
 
+    // Вернуть клетку в начальное состояние
     resetTile(): void {
         this.setValue(0);
         this.tile.gotoAndStop(this.states.default);
@@ -90,7 +91,7 @@ class Tile extends Subscriber implements ITile {
     open(byUser: boolean, isGameOver: boolean = false): void {
         switch (this.getValue()) {
             case this.states.notPressedMine:
-                byUser && this.setValue(this.states.pressedMine);
+                byUser && this.setValue(this.states.pressedMine); // Попали на мину - меняем текстуру на отличную от других мин
                 this.tile.currentFrame === this.states.flag && this.setValue(this.states.flag);
 
                 this.tile.gotoAndStop(this.currentState);
@@ -98,6 +99,7 @@ class Tile extends Subscriber implements ITile {
 
                 break;
             case this.states.init:
+                // Если стоял флажок, но мины там не оказалось, - показываем соответствующую текстуру
                 if (isGameOver && this.tile.currentFrame === this.states.flag) {
                     this.setValue(this.states.wrongMine);
                 }
@@ -108,6 +110,7 @@ class Tile extends Subscriber implements ITile {
 
                 break;
             default:
+                // Если стоял флажок, но мины там не оказалось, - показываем соответствующую текстуру
                 if (isGameOver && this.tile.currentFrame === this.states.flag) {
                     this.setValue(this.states.wrongMine);
                 }
